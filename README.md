@@ -140,9 +140,9 @@ else:
 
 ## Documentation
 
-Full documentation is available at: https://github.com/faramesh/faramesh-docs
+Full documentation: [faramesh-docs](https://github.com/faramesh/faramesh-docs) · [faramesh.dev](https://faramesh.dev)
 
-See `docs/SDK-Python.md` for detailed API reference.
+See [SDK-Python.md](https://github.com/faramesh/faramesh-docs/blob/main/SDK-Python.md) for the full API reference.
 
 ## Repository
 
