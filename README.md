@@ -4,8 +4,8 @@ Production-ready Python client for the Faramesh Execution Governor API.
 
 For AI governance and AI execution control architecture details, see:
 
-- [Faramesh Core README](https://github.com/faramesh/faramesh-core/blob/main/README.md)
-- [Core Docs Index](https://github.com/faramesh/faramesh-core/tree/main/docs)
+- [Faramesh Core README](../../README.md)
+- [Core Docs Index](../../docs/README.md)
 - [FPL Language README](https://github.com/faramesh/fpl-lang)
 - [FPL Comparison](https://github.com/faramesh/fpl-lang/blob/main/docs/COMPARISON.md)
 
@@ -126,32 +126,33 @@ OpenRouter `qwen/qwen3.6-plus:free`.
 
 ```bash
 # 1) Activate your SDK/deepagents environment
-python -m venv .venv
-source .venv/bin/activate
+source /tmp/faramesh-deepagents-venv313/bin/activate
 
 # 2) Start daemon with strict policy for this harness
-faramesh serve \
+cd /Users/xquark_home/Faramesh-Nexus/faramesh-core
+go run ./cmd/faramesh serve \
     --socket /tmp/faramesh.sock \
     --data-dir /tmp/faramesh-data \
-    --policy examples/policies/deepagents_openrouter_qwen_production.fpl
+    --policy sdk/python/examples/policies/deepagents_openrouter_qwen_production.fpl
 
 # 3) In another shell, run the harness under Faramesh runtime wiring
+cd /Users/xquark_home/Faramesh-Nexus/faramesh-core
 OPENROUTER_API_KEY=<your_key> \
-faramesh run \
+go run ./cmd/faramesh run \
     --daemon-socket /tmp/faramesh.sock \
     --agent-id deepagents-openrouter-qwen-prod \
-    --policy examples/policies/deepagents_openrouter_qwen_production.fpl \
-    -- python examples/deepagents_openrouter_qwen_production.py
+    --policy sdk/python/examples/policies/deepagents_openrouter_qwen_production.fpl \
+    -- python sdk/python/examples/deepagents_openrouter_qwen_production.py
 
 # 4) Export DPR evidence for the run
-faramesh audit export \
+go run ./cmd/faramesh audit export \
     /tmp/faramesh-data/faramesh.db \
     --agent deepagents-openrouter-qwen-prod \
     --format json
 ```
 
-Harness path: `examples/deepagents_openrouter_qwen_production.py`
-Policy path: `examples/policies/deepagents_openrouter_qwen_production.fpl`
+Harness path: `sdk/python/examples/deepagents_openrouter_qwen_production.py`
+Policy path: `sdk/python/examples/policies/deepagents_openrouter_qwen_production.fpl`
 
 ## One-Command Runtime For Custom Agents
 
