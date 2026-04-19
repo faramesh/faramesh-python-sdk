@@ -44,6 +44,8 @@ from .client import (
     FarameshServerError,
     FarameshBatchError,
     FarameshDeniedError,
+    DenyError,
+    DeferredError,
     
     # Legacy class-based API (for backward compatibility)
     ExecutionGovernorClient,
@@ -55,6 +57,7 @@ from .client import (
 )
 
 # Import new modules
+from .govern import govern
 from .governed_tool import governed_tool
 from .snapshot import ActionSnapshotStore, get_default_store
 from .policy_helpers import validate_policy_file, test_policy_against_action
@@ -146,6 +149,9 @@ __all__ = [
     "GateDecision",
     "ReplayResult",
     
+    # Governance gate
+    "govern",
+
     # Decorators
     "governed_tool",
     
@@ -164,6 +170,8 @@ __all__ = [
     "FarameshServerError",
     "FarameshBatchError",
     "FarameshDeniedError",
+    "DenyError",
+    "DeferredError",
     
     # Legacy API
     "ExecutionGovernorClient",

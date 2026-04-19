@@ -1,15 +1,10 @@
 [project]
 name = "faramesh-sdk"
-version = "0.3.0"
+version = "0.3.1"
 description = "Faramesh Python SDK - Production-ready client for the Faramesh Execution Governor API"
 requires-python = ">=3.9"
 readme = "README.md"
-license = { text = "Apache-2.0" }
-
-classifiers = [
-  "License :: OSI Approved :: Apache Software License",
-]
-
+license = { text = "MIT" }
 
 authors = [
   { name = "Faramesh Contributors" }
@@ -28,6 +23,9 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools]
+py-modules = ["sitecustomize"]
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]
