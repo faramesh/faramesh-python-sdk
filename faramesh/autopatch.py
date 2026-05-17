@@ -82,11 +82,25 @@ def install() -> list[str]:
 def _govern_call(tool_id: str, args: dict[str, Any]) -> dict[str, Any]:
     """Submit a tool call to the Faramesh daemon for governance.
 
-    Tries socket-based governance first (fastest, used with `faramesh run`),
-    falls back to the HTTP SDK client.
+    Uses FARAMESH_REMOTE_URL, FARAMESH_SOCKET, or FARAMESH_BASE_URL (see transport.py),
+    then falls back to the legacy gate HTTP client.
     """
-    socket_path = os.environ.get("FARAMESH_SOCKET", "/tmp/faramesh.sock")
+    try:
+        from faramesh.transport import detect_transport, govern_via_transport
 
+        transport = detect_transport()
+        result = govern_via_transport(transport, tool_id, args)
+        effect = _normalize_effect(result.get("effect", ""))
+        out: dict[str, Any] = {"effect": effect}
+        if effect == "DENY":
+            out["reason_code"] = result.get("reason_code", "")
+        if effect == "DEFER":
+            out["defer_token"] = result.get("defer_token", "")
+        return out
+    except RuntimeError:
+        pass
+
+    socket_path = os.environ.get("FARAMESH_SOCKET", "/tmp/faramesh.sock")
     if os.path.exists(socket_path):
         return _govern_via_socket(socket_path, tool_id, args)
 
@@ -150,11 +164,14 @@ def _govern_via_socket(socket_path: str, tool_id: str, args: dict[str, Any]) -> 
             raise RuntimeError("missing JSON-RPC result")
 
         effect = _normalize_effect(result.get("effect", ""))
-        return {
+        out: dict[str, Any] = {
             "effect": effect,
             "reason_code": result.get("reason_code", ""),
             "defer_token": result.get("defer_token", ""),
         }
+        if isinstance(result.get("structured_denial"), dict):
+            out["structured_denial"] = result["structured_denial"]
+        return out
     except Exception as exc:
         logger.error("faramesh socket govern error (fail-closed): %s", exc)
         raise RuntimeError(f"Faramesh governance denied: {exc}") from exc
@@ -232,6 +249,12 @@ def _require_defer_approval(tool_id: str, result: dict[str, Any]) -> None:
     defer_token = str(result.get("defer_token") or "").strip()
     if not defer_token:
         raise RuntimeError(f"Faramesh DEFER missing token (tool={tool_id})")
+
+    mode = os.environ.get("FARAMESH_DEFER_MODE", "").strip().lower()
+    if mode in {"raise", "immediate", "exception", "failfast"}:
+        raise RuntimeError(
+            f"Faramesh DEFER: approval required (token={defer_token}, tool={tool_id})"
+        )
 
     socket_path = os.environ.get("FARAMESH_SOCKET", "/tmp/faramesh.sock")
     if not os.path.exists(socket_path):

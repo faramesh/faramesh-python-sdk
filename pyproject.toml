@@ -1,6 +1,6 @@
 [project]
-name = "faramesh-sdk"
-version = "0.3.2"
+name = "faramesh"
+version = "0.3.3"
 description = "Faramesh Python SDK - Production-ready client for the Faramesh Execution Governor API"
 requires-python = ">=3.9"
 readme = "README.md"
